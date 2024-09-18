@@ -1,20 +1,20 @@
 networks:
   backend:
-    name: backend
+    name: backend2
     driver: bridge
   frontend:
-    name: frontend
+    name: frontend2
     driver: bridge
   portainer:
-    name: portainer
+    name: portainer2
     driver: bridge
 
 services:
-  mariadb:
+  mariadb2:
     image: mariadb:lts-ubi9
-    container_name: mariadb
+    container_name: mariadb2
     networks:
-      - backend
+      - backend2
     volumes:
       - "mariadb_data:/var/lib/mysql"
       - "./conf/mariadb/healthcheck.sh:/usr/local/bin/healthcheck.sh"
@@ -28,14 +28,14 @@ services:
       retries: 3
       start_period: 1m30s
 
-  wordpress:
+  wordpress2:
     depends_on:
-      - mariadb
+      - mariadb2
     image: wordpress:php8.3-fpm-alpine
-    container_name: wordpress
+    container_name: wordpress2
     restart: unless-stopped
     networks:
-      - backend
+      - backend2
     env_file:
       "./env/wordpress.env"
     volumes:
@@ -48,14 +48,14 @@ services:
       retries: 3
       start_period: 1m30s
 
-  caddy:
+  caddy2:
     depends_on:
-      - wordpress
+      - wordpress2
     image: caddy:2.8.4-alpine
-    container_name: caddy
+    container_name: caddy2
     networks:
-      - frontend
-      - backend
+      - frontend2
+      - backend2
     volumes:
       - "caddy_data:/data/caddy"
       - "caddy_config:/config"
@@ -75,14 +75,14 @@ services:
       retries: 3
       start_period: 1m30s
 
-  adminer:
+  adminer2:
     depends_on:
-      - mariadb
+      - mariadb2
     image: adminer:4.8.1-standalone
-    container_name: adminer
+    container_name: adminer2
     restart: unless-stopped
     networks:
-      - backend
+      - backend2
     env_file:
       "./env/adminer.env"
     ports:
@@ -94,12 +94,13 @@ services:
       retries: 3
       start_period: 30s
 
-  portainer:
+  portainer2:
+    depends_on:
+      - caddy2
     image: portainer/portainer-ce:2.21.1
-    container_name: portainer
+    container_name: portainer2
     restart: always
     networks:
-      - portainer
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - portainer_data:/data
