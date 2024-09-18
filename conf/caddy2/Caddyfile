@@ -2,40 +2,67 @@
     # Global options block
     email hello@repasscloud.com  # Email for Let's Encrypt certificate notifications
     # acme_ca https://acme-v02.api.letsencrypt.org/directory # Uncomment if using a custom ACME server
+    servers {
+        max_header_size 16384
+    }
 }
 
 dev03.reyatra.com {
     # Reverse proxy to Nginx container
-    reverse_proxy nginx:80 {
-        header_up Host {host}         # Preserve original Host header
-        header_up X-Real-IP {remote}  # Add real client IP to requests
-        header_up X-Forwarded-For {remote} # Add X-Forwarded-For header
-        header_up X-Forwarded-Proto {scheme} # Add protocol (http/https)
-    }
+    # reverse_proxy nginx:80 {
+    #     header_up Host {host}         # Preserve original Host header
+    #     header_up X-Real-IP {remote}  # Add real client IP to requests
+    #     header_up X-Forwarded-For {remote} # Add X-Forwarded-For header
+    #     header_up X-Forwarded-Proto {scheme} # Add protocol (http/https)
+    # }
 
-    # General CORS headers
-    header {
-        # Enable CORS for all origins
-        Access-Control-Allow-Origin "*"
-        Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
-        Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin"
-        Access-Control-Allow-Credentials "true"
-        Access-Control-Expose-Headers "Content-Length, X-JSON"
+    # # General CORS headers
+    # header {
+    #     # Enable CORS for all origins
+    #     Access-Control-Allow-Origin "*"
+    #     Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+    #     Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+    #     Access-Control-Allow-Credentials "true"
+    #     Access-Control-Expose-Headers "Content-Length, X-JSON"
 
-        # X-Frame-Options set to SAMEORIGIN for Elementor
-        X-Frame-Options "SAMEORIGIN"
-        # Prevent MIME types security risk
-        X-Content-Type-Options "nosniff"
-        # Enable HTTPS for the website
-        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    }
+    #     # X-Frame-Options set to SAMEORIGIN for Elementor
+    #     X-Frame-Options "SAMEORIGIN"
+    #     # Prevent MIME types security risk
+    #     X-Content-Type-Options "nosniff"
+    #     # Enable HTTPS for the website
+    #     Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    # }
+    
+    root * /var/www/html
+    php_fastcgi wordpress:9000
+    fileserver
 
     # Enable gzip and zstd compression
     encode gzip zstd
 
     # Logging
     log {
-        output file /var/log/caddy/dev01_access.log  # Path to access log file
+        # Path to access log file
+        output file /var/log/caddy/dev01_access.log {
+            roll_size 20mb
+            roll_keep 2
+            roll_keep_for 6h
+        }
         format json  # Use JSON format for logs (optional)
+        level error
     }
+
+    # cache
+    @cachedFiles {
+        path *.webp *.jpg *.jpeg *.png *.gif *.ico *.js *.css *.woff *.woff2 *.ttf
+    }
+    header @cachedFiles Cache-Control "public, max-age-604800, must-revalidate"
+
+    # protected WP directories
+    @disallowed {
+        path /xmlrpc.php
+        path *.sql
+        path /wp-content/uploads/*.php
+    }
+    rewrite @disallowed '/index.php'
 }
