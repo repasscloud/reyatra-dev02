@@ -66,7 +66,6 @@ services:
       - "caddy_config:/config"
       - "./logs/caddy2:/var/log/caddy"
       - "./conf/caddy2/Caddyfile:/etc/caddy/Caddyfile"
-      
     restart: unless-stopped
     ports:
       - "80:80"
@@ -97,12 +96,24 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+  
+  portainer:
+    image: portainer/portainer-ce:2.21.1
+    container_name: portainer
+    volumes:
+      - "portainer_data:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: always
+    ports:
+      - "8000:8000"
+      - "9443:9443"
 
 volumes:
   mariadb_data:
   wordpress_data:
   caddy_data:
   caddy_config:
+  portainer_data:
 
 networks:
   frontend:
