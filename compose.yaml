@@ -106,7 +106,7 @@ services:
     environment:
       - "TZ=Australia/Sydney"
     ports:
-      - "9445:9443"
+      - "9443:9443"
 
 volumes:
   mariadb_data:

@@ -33,7 +33,7 @@ dev02.reyatra.com {
 # Serve Portainer
 portainer.reyatra.com {
     # Reverse proxy to Portainer container
-    reverse_proxy portainer:9000
+    reverse_proxy portainer:8000
 
     # Additional security headers for Portainer
     header {
