@@ -107,6 +107,7 @@ services:
       - "TZ=Australia/Sydney"
     ports:
       - "9443:9443"
+      - "8000:8000"
 
 volumes:
   mariadb_data:
