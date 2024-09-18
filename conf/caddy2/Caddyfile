@@ -2,7 +2,6 @@
     # Global options block
     email hello@repasscloud.com  # Email for Let's Encrypt certificate notifications
     acme_ca https://acme-v02.api.letsencrypt.org/directory # Let's Encrypt ACME URL
-
 }
 
 dev03.reyatra.com {
@@ -32,4 +31,10 @@ dev03.reyatra.com {
     }
 
     encode gzip
+
+    # Logging
+    log {
+        output file /var/log/caddy/dev01_access.log  # Path to access log file
+        format json  # Use JSON format for logs (optional)
+    }
 }
