@@ -6,10 +6,10 @@ dev03.reyatra.com {
     root * /var/www/html
     encode zstd gzip
     
-    @forbidden {
-        path /wp-config.php
-    }
-    respond @forbidden "Access denied" 403
+    # @forbidden {
+    #     path /wp-config.php
+    # }
+    # respond @forbidden "Access denied" 403
 
     # Logging
     log {
