@@ -1,11 +1,11 @@
 networks:
-  backend:
+  backend2:
     name: backend2
     driver: bridge
-  frontend:
+  frontend2:
     name: frontend2
     driver: bridge
-  portainer:
+  portainer2:
     name: portainer2
     driver: bridge
 
@@ -95,8 +95,6 @@ services:
       start_period: 30s
 
   portainer2:
-    depends_on:
-      - caddy2
     image: portainer/portainer-ce:2.21.1
     container_name: portainer2
     restart: always
