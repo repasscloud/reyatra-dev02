@@ -1,5 +1,6 @@
 services:
   caddy:
+    container_name: caddy
     image: caddy:2.8.4-alpine
     restart: unless-stopped
     ports:
@@ -13,7 +14,7 @@ services:
       - "wordpress_data:/var/www/html"
 
   wordpress:
-    name: wordpress
+    container_name: wordpress
     image: wordpress:php8.3-fpm-alpine
     restart: unless-stopped
     depends_on:
@@ -25,7 +26,7 @@ services:
       - "./conf/wordpress/custom.ini:/usr/local/etc/php/conf.d/uploads.ini"
 
   mariadb:
-    name: mariadb
+    container_name: mariadb
     image: mariadb:lts-ubi9
     volumes:
       - "mariadb_data:/var/lib/mysql"
