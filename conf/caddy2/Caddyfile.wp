@@ -22,4 +22,7 @@ dev03.reyatra.com {
         format json  # Use JSON format for logs (optional)
         level error
     }
+
+    php_fastcgi wordpress:9000
+    file_server
 }
