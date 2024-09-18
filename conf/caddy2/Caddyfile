@@ -62,7 +62,6 @@ dev03.reyatra.com {
     @disallowed {
         path /xmlrpc.php
         path *.sql
-        path /wp-content/uploads/*.php
     }
     rewrite @disallowed '/index.php'
 }
