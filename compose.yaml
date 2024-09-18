@@ -1,17 +1,9 @@
-networks:
-  backend2:
-    name: backend2
-    driver: bridge
-  frontend2:
-    name: frontend2
-    driver: bridge
-
 services:
-  mariadb2:
+  mariadb:
     image: mariadb:lts-ubi9
-    container_name: mariadb2
+    container_name: mariadb
     networks:
-      - backend2
+      - backend
     volumes:
       - "mariadb_data:/var/lib/mysql"
       - "./conf/mariadb/healthcheck.sh:/usr/local/bin/healthcheck.sh"
@@ -25,19 +17,19 @@ services:
       retries: 3
       start_period: 1m30s
 
-  wordpress2:
+  wordpress:
     depends_on:
-      - mariadb2
+      - mariadb
     image: wordpress:php8.3-fpm-alpine
-    container_name: wordpress2
+    container_name: wordpress
     restart: unless-stopped
     networks:
-      - backend2
+      - backend
     env_file:
       "./env/wordpress.env"
     volumes:
       - "wordpress_data:/var/www/html"
-      - "./conf/wordpress/custom.ini:/usr/local/etc/php/conf.d/custom.ini"
+      - "./conf/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini"
     healthcheck:
       test: ["CMD", "pidof", "php-fpm"]
       interval: 1m30s
@@ -45,21 +37,37 @@ services:
       retries: 3
       start_period: 1m30s
 
+  nginx:
+    depends_on:
+      - wordpress
+    image: nginx:1.27.1-alpine3.20
+    container_name: nginx
+    volumes:
+      - "./conf/nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./conf/nginx/default.conf:/etc/nginx/conf.d/default.conf"
+      - "wordpress_data:/var/www/html"
+      - "./logs/nginx:/var/log/nginx"
+    networks:
+      - frontend
+      - backend
+
   caddy2:
     depends_on:
-      - wordpress2
+      - nginx
     image: caddy:2.8.4-alpine
     container_name: caddy2
     networks:
-      - frontend2
-      - backend2
+      - frontend
+      - backend
+    env_file:
+      "./env/caddy2.env"
     volumes:
       - "caddy_data:/data/caddy"
       - "caddy_config:/config"
       - "./logs/caddy2:/var/log/caddy"
       - "./conf/caddy2/Caddyfile:/etc/caddy/Caddyfile"
     environment:
-      - "TZ=Australia/Sydney"
+      
     restart: unless-stopped
     ports:
       - "80:80"
@@ -72,14 +80,14 @@ services:
       retries: 3
       start_period: 1m30s
 
-  adminer2:
+  adminer:
     depends_on:
-      - mariadb2
+      - mariadb
     image: adminer:4.8.1-standalone
-    container_name: adminer2
+    container_name: adminer
     restart: unless-stopped
     networks:
-      - backend2
+      - backend
     env_file:
       "./env/adminer.env"
     ports:
@@ -96,3 +104,12 @@ volumes:
   wordpress_data:
   caddy_data:
   caddy_config:
+
+networks:
+  frontend:
+    name: frontend
+    driver: bridge
+  backend:
+    name: backend
+    driver: bridge
+    internal: true

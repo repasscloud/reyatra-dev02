@@ -1,20 +1,28 @@
 {
     # Global options block
     email hello@repasscloud.com  # Email for Let's Encrypt certificate notifications
+    acme_ca https://acme-v02.api.letsencrypt.org/directory # Let's Encrypt ACME URL
+
 }
 
-# Serve the WordPress site
 dev03.reyatra.com {
-    # Reverse proxy to WordPress container
-    reverse_proxy wordpress2:9000
+    # Reverse proxy to Nginx container
+    reverse_proxy nginx:80 {
+        header_up Host {host}         # Preserve original Host header
+        header_up X-Real-IP {remote}  # Add real client IP to requests
+        header_up X-Forwarded-For {remote} # Add X-Forwarded-For header
+        header_up X-Forwarded-Proto {scheme} # Add protocol (http/https)
+    }
 
-    # General CORS headers for dev03.reyatra.com
+    # General CORS headers
     header {
         # Enable CORS for all origins
         Access-Control-Allow-Origin "*"
         Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
-        Access-Control-Allow-Headers "Content-Type, Authorization"
-        
+        Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+        Access-Control-Allow-Credentials "true"
+        Access-Control-Expose-Headers "Content-Length, X-JSON"
+
         # X-Frame-Options set to SAMEORIGIN for Elementor
         X-Frame-Options "SAMEORIGIN"
         # Prevent MIME types security risk
@@ -23,6 +31,5 @@ dev03.reyatra.com {
         Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     }
 
-    # Enable gzip compression
     encode gzip
 }
