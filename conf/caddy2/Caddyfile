@@ -1,14 +1,6 @@
 {
     # Global options block
-    email hello@repasscloud.com         # Email for Let's Encrypt certificate notifications
-    # General CORS headers for dev02.reyatra.com
-    header {
-        # Enable CORS
-        Access-Control-Allow-Origin dev02.reyatra.com
-        Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
-        Access-Control-Allow-Headers "Content-Type, Authorization"
-        Access-Control-Allow-Credentials true
-    }
+    email hello@repasscloud.com  # Email for Let's Encrypt certificate notifications
 }
 
 # Serve the WordPress site
@@ -16,8 +8,14 @@ dev02.reyatra.com {
     # Reverse proxy to WordPress container
     reverse_proxy wordpress:9000
 
-    # Additional security headers
+    # General CORS headers for dev02.reyatra.com
     header {
+        # Enable CORS
+        Access-Control-Allow-Origin "dev02.reyatra.com"
+        Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+        Access-Control-Allow-Headers "Content-Type, Authorization"
+        Access-Control-Allow-Credentials "true"
+        
         # X-Frame-Options set to SAMEORIGIN for Elementor
         X-Frame-Options "SAMEORIGIN"
         # Prevent MIME types security risk
