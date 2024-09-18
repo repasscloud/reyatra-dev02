@@ -6,7 +6,7 @@
 # Serve the WordPress site
 dev03.reyatra.com {
     # Reverse proxy to WordPress container
-    reverse_proxy wordpress:9000
+    reverse_proxy wordpress2:9000
 
     # General CORS headers for dev02.reyatra.com
     header {
