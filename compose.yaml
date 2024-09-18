@@ -1,4 +1,39 @@
 services:
+  caddy:
+    image: caddy:2.8.4-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - "caddy_data:/data/caddy"
+      - "caddy_config:/config"
+      - "./logs/caddy2:/var/log/caddy"
+      - "./conf/caddy2/Caddyfile.wp:/etc/caddy/Caddyfile"
+      - "wordpress_data:/var/www/html"
+
+  wordpress:
+    image: wordpress:php8.3-fpm-alpine
+    restart: unless-stopped
+    depends_on:
+      - wp-db
+    env_file:
+      "./env/wordpress.env"
+    volumes:
+      - "wordpress_data:/var/www/html"
+      - "./conf/wordpress/custom.ini:/usr/local/etc/php/conf.d/uploads.ini"
+
+  wp-db:
+    image: mariadb:lts-ubi9
+    volumes:
+      - "mariadb_data:/var/lib/mysql"
+      - "./conf/mariadb/healthcheck.sh:/usr/local/bin/healthcheck.sh"
+    restart: unless-stopped
+    env_file:
+      - "./env/mariadb.env"
+    
+
+services:
   mariadb:
     image: mariadb:lts-ubi9
     container_name: mariadb

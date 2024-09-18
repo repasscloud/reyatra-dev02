@@ -1,0 +1,25 @@
+{
+    email hello@repasscloud.com  # Email for Let's Encrypt certificate notifications
+}
+
+dev03.reyatra.com {
+    root * /var/www/html
+    encode zstd gzip
+    
+    @forbidden {
+        path /wp-config.php
+    }
+    respond @forbidden "Access denied" 403
+
+    # Logging
+    log {
+        # Path to access log file
+        output file /var/log/caddy/dev01_access.log {
+            roll_size 20mb
+            roll_keep 2
+            roll_keep_for 6h
+        }
+        format json  # Use JSON format for logs (optional)
+        level error
+    }
+}
