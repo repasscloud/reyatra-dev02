@@ -1,0 +1,47 @@
+{
+    # Global options block
+    email hello@repasscloud.com         # Email for Let's Encrypt certificate notifications
+    # General CORS headers for dev02.reyatra.com
+    header {
+        # Enable CORS
+        Access-Control-Allow-Origin dev02.reyatra.com
+        Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+        Access-Control-Allow-Headers "Content-Type, Authorization"
+        Access-Control-Allow-Credentials true
+    }
+}
+
+# Serve the WordPress site
+dev02.reyatra.com {
+    # Reverse proxy to WordPress container
+    reverse_proxy wordpress:9000
+
+    # Additional security headers
+    header {
+        # X-Frame-Options set to SAMEORIGIN for Elementor
+        X-Frame-Options "SAMEORIGIN"
+        # Prevent MIME types security risk
+        X-Content-Type-Options "nosniff"
+        # Enable HTTPS for the website
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    }
+
+    # Enable gzip compression
+    encode gzip
+}
+
+# Serve Portainer
+portainer.reyatra.com {
+    # Reverse proxy to Portainer container
+    reverse_proxy portainer:9000
+
+    # Additional security headers for Portainer
+    header {
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    }
+    
+    # Enable gzip compression
+    encode gzip
+}

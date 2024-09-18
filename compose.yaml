@@ -1,0 +1,116 @@
+networks:
+  backend:
+    name: backend
+    driver: bridge
+  frontend:
+    name: frontend
+    driver: bridge
+  portainer:
+    name: portainer
+    driver: bridge
+
+services:
+  mariadb:
+    image: mariadb:lts-ubi9
+    container_name: mariadb
+    networks:
+      - backend
+    volumes:
+      - "mariadb_data:/var/lib/mysql"
+      - "./conf/mariadb/healthcheck.sh:/usr/local/bin/healthcheck.sh"
+    restart: unless-stopped
+    env_file:
+      - "./env/mariadb.env"
+    healthcheck:
+      test: [ "CMD", "/usr/local/bin/healthcheck.sh" ]
+      interval: 2m
+      timeout: 10s
+      retries: 3
+      start_period: 1m30s
+
+  wordpress:
+    depends_on:
+      - mariadb
+    image: wordpress:php8.3-fpm-alpine
+    container_name: wordpress
+    restart: unless-stopped
+    networks:
+      - backend
+    env_file:
+      "./env/wordpress.env"
+    volumes:
+      - "wordpress_data:/var/www/html"
+      - "./conf/wordpress/custom.ini:/usr/local/etc/php/conf.d/custom.ini"
+    healthcheck:
+      test: ["CMD", "pidof", "php-fpm"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 3
+      start_period: 1m30s
+
+  caddy:
+    depends_on:
+      - wordpress
+    image: caddy:2.8.4-alpine
+    container_name: caddy
+    networks:
+      - frontend
+      - backend
+    volumes:
+      - "caddy_data:/data/caddy"
+      - "caddy_config:/config"
+      - "./logs/caddy2:/var/log/caddy"
+      - "./conf/caddy2/Caddyfile:/etc/caddy/Caddyfile"
+    environment:
+      - "TZ=Australia/Sydney"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m30s
+
+  adminer:
+    depends_on:
+      - mariadb
+    image: adminer:4.8.1-standalone
+    container_name: adminer
+    restart: unless-stopped
+    networks:
+      - backend
+    env_file:
+      "./env/adminer.env"
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD", "pidof", "php"]
+      interval: 2m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  portainer:
+    image: portainer/portainer-ce:2.21.1
+    container_name: portainer
+    restart: always
+    networks:
+      - portainer
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - portainer_data:/data
+    environment:
+      - "TZ=Australia/Sydney"
+    ports:
+      - "9443:9443"
+
+volumes:
+  mariadb_data:
+  wordpress_data:
+  caddy_data:
+  caddy_config:
+  portainer_data:
