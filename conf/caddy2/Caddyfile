@@ -8,13 +8,12 @@ dev03.reyatra.com {
     # Reverse proxy to WordPress container
     reverse_proxy wordpress2:9000
 
-    # General CORS headers for dev02.reyatra.com
+    # General CORS headers for dev03.reyatra.com
     header {
-        # Enable CORS
-        Access-Control-Allow-Origin "dev03.reyatra.com"
+        # Enable CORS for all origins
+        Access-Control-Allow-Origin "*"
         Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
         Access-Control-Allow-Headers "Content-Type, Authorization"
-        Access-Control-Allow-Credentials "true"
         
         # X-Frame-Options set to SAMEORIGIN for Elementor
         X-Frame-Options "SAMEORIGIN"
@@ -27,4 +26,3 @@ dev03.reyatra.com {
     # Enable gzip compression
     encode gzip
 }
-
