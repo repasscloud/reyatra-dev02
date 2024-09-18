@@ -29,7 +29,7 @@ services:
       "./env/wordpress.env"
     volumes:
       - "wordpress_data:/var/www/html"
-      - "./conf/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini"
+      - "./conf/wordpress/custom.ini:/usr/local/etc/php/conf.d/uploads.ini"
     healthcheck:
       test: ["CMD", "pidof", "php-fpm"]
       interval: 1m30s
