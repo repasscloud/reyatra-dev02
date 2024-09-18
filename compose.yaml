@@ -120,7 +120,6 @@ networks:
   frontend:
     name: frontend
     driver: bridge
-    external: true
   backend:
     name: backend
     driver: bridge
