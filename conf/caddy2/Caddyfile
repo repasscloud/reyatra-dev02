@@ -4,7 +4,7 @@
 }
 
 # Serve the WordPress site
-dev02.reyatra.com {
+dev03.reyatra.com {
     # Reverse proxy to WordPress container
     reverse_proxy wordpress:9000
 
@@ -28,18 +28,3 @@ dev02.reyatra.com {
     encode gzip
 }
 
-# Serve Portainer
-portainer.reyatra.com {
-    # Reverse proxy to Portainer container
-    reverse_proxy portainer:8000
-
-    # Additional security headers for Portainer
-    header {
-        X-Frame-Options "DENY"
-        X-Content-Type-Options "nosniff"
-        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    }
-    
-    # Enable gzip compression
-    encode gzip
-}
