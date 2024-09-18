@@ -11,7 +11,7 @@ dev03.reyatra.com {
     # General CORS headers for dev02.reyatra.com
     header {
         # Enable CORS
-        Access-Control-Allow-Origin "dev02.reyatra.com"
+        Access-Control-Allow-Origin "dev03.reyatra.com"
         Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
         Access-Control-Allow-Headers "Content-Type, Authorization"
         Access-Control-Allow-Credentials "true"
