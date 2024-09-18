@@ -52,16 +52,16 @@ dev03.reyatra.com {
         level error
     }
 
-    # cache
-    @cachedFiles {
-        path *.webp *.jpg *.jpeg *.png *.gif *.ico *.js *.css *.woff *.woff2 *.ttf
-    }
-    header @cachedFiles Cache-Control "public, max-age-604800, must-revalidate"
+    # # cache
+    # @cachedFiles {
+    #     path *.webp *.jpg *.jpeg *.png *.gif *.ico *.js *.css *.woff *.woff2 *.ttf
+    # }
+    # header @cachedFiles Cache-Control "public, max-age-604800, must-revalidate"
 
-    # protected WP directories
-    @disallowed {
-        path /xmlrpc.php
-        path *.sql
-    }
-    rewrite @disallowed '/index.php'
+    # # protected WP directories
+    # @disallowed {
+    #     path /xmlrpc.php
+    #     path *.sql
+    # }
+    # rewrite @disallowed '/index.php'
 }
