@@ -35,7 +35,7 @@ dev03.reyatra.com {
     
     root * /var/www/html
     php_fastcgi wordpress:9000
-    fileserver
+    file_server
 
     # Enable gzip and zstd compression
     encode gzip zstd
