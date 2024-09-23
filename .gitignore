@@ -1,1 +1,3 @@
 p.pp
+logs/caddy2/*.log
+logs/nginx/*.log
